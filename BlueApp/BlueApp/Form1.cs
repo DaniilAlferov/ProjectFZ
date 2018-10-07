@@ -29,17 +29,49 @@ namespace BlueApp
 
         private void scan()
         {
-            BluetoothRadio.PrimaryRadio.Mode = RadioMode.Connectable;
-            BluetoothClient client = new BluetoothClient();
-            BluetoothDeviceInfo[] devices = client.DiscoverDevices();
-            BluetoothClient bluetoothClient = new BluetoothClient();
-
-            String deviceName;
-
-            foreach (BluetoothDeviceInfo device in devices)
+            comboBox1.Enabled = false;
+            button1.Enabled = false;
+            comboBox1.Items.Clear();
+            try
             {
-                deviceName = device.DeviceName.ToString();
-                textBox1.Text = deviceName;
+                BluetoothRadio.PrimaryRadio.Mode = RadioMode.Connectable;
+                BluetoothClient client = new BluetoothClient();
+                BluetoothDeviceInfo[] devices = client.DiscoverDevices();
+                BluetoothClient bluetoothClient = new BluetoothClient();
+
+                String deviceName;
+
+                foreach (BluetoothDeviceInfo device in devices)
+                {
+                    deviceName = device.DeviceName.ToString();
+                    comboBox1.Items.Add(deviceName);
+                }
+                if (comboBox1.Items.Count > 0)
+                {
+                    comboBox1.Text = "Выберите устройство:";
+                }
+                else
+                {
+                    comboBox1.Text = "Устройств не найдено!";
+                }
+            }
+            catch
+            {
+                //Ошибка. У ПК проблем с Bluetooth
+            }
+            comboBox1.Enabled = true;
+            button1.Enabled = true;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                //Тут будет подключение к выбранному устройству из комбобокса
+            }
+            catch
+            {
+                //Ошибка подключения к устройству.
             }
         }
     }
