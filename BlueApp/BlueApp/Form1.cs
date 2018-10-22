@@ -21,7 +21,7 @@ namespace BlueApp
             button1.Enabled = false;
             comboBox1.Items.Clear();
 
-            devices = ScanBt.scan();
+            devices = Bt.scan();
 
             String deviceName;
 
@@ -43,7 +43,7 @@ namespace BlueApp
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ConnectBt.Connection(devices, comboBox1.SelectedItem.ToString());
+            Bt.Connection(devices, comboBox1.SelectedItem.ToString());
         }
     }
 }
