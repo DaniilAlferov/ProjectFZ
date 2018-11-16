@@ -1,10 +1,9 @@
-﻿using InTheHand.Net.Bluetooth;
+﻿using InTheHand.Net;
+using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BlueApp.Functions
@@ -13,7 +12,7 @@ namespace BlueApp.Functions
     {
         public static BluetoothClient client = new BluetoothClient();
 
-        public static BluetoothDeviceInfo[] scan()
+        public static BluetoothDeviceInfo[] Scan()
         {
             BluetoothRadio.PrimaryRadio.Mode = RadioMode.Connectable;
             BluetoothDeviceInfo[] devices = client.DiscoverDevices();
@@ -38,15 +37,32 @@ namespace BlueApp.Functions
             }
         }
 
-        public static void Connection(BluetoothDeviceInfo[] devices, string name)
+        public static bool Connection(BluetoothDeviceInfo[] devices, string name)
         {
+            bool con = false;
             try
             {
+                var serviceClass = BluetoothService.SerialPort;
                 foreach (BluetoothDeviceInfo device in devices)
                 {
                     if (device.DeviceName.ToString() == name)
                     {
-                        //Хз как подключить(
+                        if (!device.Connected)
+                        {
+                            var ep = new BluetoothEndPoint(device.DeviceAddress, serviceClass);
+                            client.Connect(ep);
+                            MessageBox.Show("Устройство " + name + " подключено!");
+                            con = true;
+                            return con;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Устройство " + name + " уже подключено!");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удается подключится к устройству " + name + "!");
                     }
                 }
             }
@@ -54,6 +70,31 @@ namespace BlueApp.Functions
             {
                 MessageBox.Show("Ошибка подключения к устройству Bluetooth!");
             }
+            return con;
+        }
+
+        public static string ReaderBT()
+        {
+            //Тут как то надо слушать то что передается, чтобы понять подключено ли все таки устройство
+
+            NetworkStream stream = client.GetStream();
+
+            if (stream.CanRead)
+            {
+                byte[] myReadBuffer = new byte[1024];
+                StringBuilder myCompleteMessage = new StringBuilder();
+                int numberOfBytesRead = 0;
+                
+                do
+                {
+                    numberOfBytesRead = stream.Read(myReadBuffer, 0, myReadBuffer.Length);
+
+                    myCompleteMessage.AppendFormat("{0}", Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
+                    return myCompleteMessage.ToString();
+                }
+                while (stream.DataAvailable);
+            }
+            return null;
         }
     }
 }
