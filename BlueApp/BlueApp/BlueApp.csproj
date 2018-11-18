@@ -58,7 +58,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Functions\Bt.cs" />
+    <Compile Include="Functions\BluetoothFunctions.cs" />
+    <Compile Include="Functions\ReadData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

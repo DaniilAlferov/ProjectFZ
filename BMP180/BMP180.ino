@@ -1,41 +1,43 @@
-#include <SFE_BMP180.h>
 #include <Wire.h>
-#include <BluetoothSerial.h>
+#include <Adafruit_BMP085.h>
 
-SFE_BMP180 pressure;
-BluetoothSerial SerialBT;
-
-void setup(){
-    SerialBT.begin("ESP32");
-    pressure.begin();
+Adafruit_BMP085 bmp;
+  
+void setup() {
+  Serial.begin(9600);
+  if (!bmp.begin()) {
+        Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+        while (1) {}
+  }
 }
+  
+void loop() {
+  Serial.print("Temperature = ");
+  Serial.print(bmp.readTemperature());
+  Serial.println(" *C");
+    
+  Serial.print("Pressure = ");
+  Serial.print(bmp.readPressure());
+  Serial.println(" Pa");
+    
+  // Calculate altitude assuming 'standard' barometric
+  // pressure of 1013.25 millibar = 101325 Pascal
+  Serial.print("Altitude = ");
+  Serial.print(bmp.readAltitude());
+  Serial.println(" meters");
 
-void loop(){
-    double P;
-    P = getPressure();
-    SerialBT.println(P, 4);
-    delay(5000);
-}
+  Serial.print("Pressure at sealevel (calculated) = ");
+  Serial.print(bmp.readSealevelPressure());
+  Serial.println(" Pa");
 
-double getPressure(){
-    char status;
-    double T,P,p0,a;
-
-    status = pressure.startTemperature();
-    if (status != 0){
-        // ожидание замера температуры
-        delay(status);
-        status = pressure.getTemperature(T);
-        if (status != 0){
-            status = pressure.startPressure(3);
-            if (status != 0){
-                // ожидание замера давления
-                delay(status);
-                status = pressure.getPressure(P,T);
-                if (status != 0){
-                    return(P);
-                }
-            }
-        }
-    }
+  // you can get a more precise measurement of altitude
+  // if you know the current sea level pressure which will
+  // vary with weather and such. If it is 1015 millibars
+  // that is equal to 101500 Pascals.
+  Serial.print("Real altitude = ");
+  Serial.print(bmp.readAltitude(102000));
+  Serial.println(" meters");
+    
+  Serial.println();
+  delay(500);
 }

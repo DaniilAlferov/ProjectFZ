@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using BlueApp.Functions;
-using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 
 namespace BlueApp
@@ -13,6 +12,22 @@ namespace BlueApp
             InitializeComponent();
         }
 
+        /*
+        static void Main(string[] args)
+        {
+            ReadData rd = new ReadData();
+            rd.OnChange += rd_OnChange;
+        }
+
+        private static void rd_OnChange(object sender, EventArgs e) //Обработчик события OnChange
+        {
+            TextBox textBox = new TextBox();
+            textBox.Text += ReadData.listData[ReadData.listData.Count-1];
+            MessageBox.Show("Обнаружено изменение эл-та MyList!");
+        }
+        */
+        
+
         BluetoothDeviceInfo[] devices;
 
         private void button1_Click(object sender, EventArgs e)
@@ -21,7 +36,7 @@ namespace BlueApp
             button1.Enabled = false;
             comboBox1.Items.Clear();
 
-            devices = Bt.Scan();
+            devices = BluetoothFunctions.Scan(); //Получение имен всех найденных девайсов
 
             String deviceName;
 
@@ -43,11 +58,9 @@ namespace BlueApp
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            bool con = Bt.Connection(devices, comboBox1.SelectedItem.ToString());
-            if (con)
-            {
-                textBox1.Text = Bt.ReaderBT();
-            }
+            BluetoothFunctions.Connection(devices, comboBox1.SelectedItem.ToString()); //Подключение к выбранному девайсу
+            comboBox1.Enabled = false;
         }
+
     }
 }
