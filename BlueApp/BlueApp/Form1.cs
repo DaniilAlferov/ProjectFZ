@@ -12,21 +12,11 @@ namespace BlueApp
             InitializeComponent();
         }
 
-        /*
-        static void Main(string[] args)
+        public string Messages
         {
-            ReadData rd = new ReadData();
-            rd.OnChange += rd_OnChange;
+            get => textBox1.Text;
+            set => textBox1.Text = value;
         }
-
-        private static void rd_OnChange(object sender, EventArgs e) //Обработчик события OnChange
-        {
-            TextBox textBox = new TextBox();
-            textBox.Text += ReadData.listData[ReadData.listData.Count-1];
-            MessageBox.Show("Обнаружено изменение эл-та MyList!");
-        }
-        */
-        
 
         BluetoothDeviceInfo[] devices;
 
@@ -58,7 +48,7 @@ namespace BlueApp
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            BluetoothFunctions.Connection(devices, comboBox1.SelectedItem.ToString()); //Подключение к выбранному девайсу
+            BluetoothFunctions.Connection(devices, comboBox1.SelectedItem.ToString(), this); //Подключение к выбранному девайсу
             comboBox1.Enabled = false;
         }
 

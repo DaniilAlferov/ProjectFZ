@@ -34,7 +34,7 @@ namespace BlueApp.Functions
             }
         }
 
-        public static void Connection(BluetoothDeviceInfo[] devices, string name)
+        public static void Connection(BluetoothDeviceInfo[] devices, string name, Form1 context)
         {
             var serviceClass = BluetoothService.SerialPort;
             foreach (BluetoothDeviceInfo device in devices)
@@ -53,7 +53,14 @@ namespace BlueApp.Functions
                         {
                             MessageBox.Show("Устройство " + name + " уже подключено!");
                         }
-                        ReadData.ReadDataStream();
+
+                        ReadData.ReadDataStream((a, e) =>
+                        {
+                            if (e.NewItems.Count > 0)
+                            {
+                                context.Messages += e.NewItems[0].ToString();
+                            }
+                        });
                     }
                     catch
                     {
