@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 using BlueApp.Functions;
 using InTheHand.Net.Sockets;
@@ -15,7 +16,10 @@ namespace BlueApp
         public string Messages
         {
             get => textBox1.Text;
-            set => textBox1.Text = value;
+            set => textBox1.Invoke((ThreadStart)delegate ()
+            {
+                textBox1.Text = value;
+            });
         }
 
         BluetoothDeviceInfo[] devices;
@@ -53,5 +57,9 @@ namespace BlueApp
             comboBox1.Enabled = false;
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            System.Environment.Exit(1);
+        }
     }
 }
