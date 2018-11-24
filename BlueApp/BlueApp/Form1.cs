@@ -26,6 +26,7 @@ namespace BlueApp
             button1.Enabled = false;
             comboBox1.Items.Clear();
 
+            //Надо сделать, если бт не вкл, то сособщение или вкл его
             devices = BluetoothFunctions.Scan(); //Получение имен всех найденных девайсов
 
             String deviceName;
