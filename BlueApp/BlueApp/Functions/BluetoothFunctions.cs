@@ -2,6 +2,7 @@
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace BlueApp.Functions
@@ -42,28 +43,21 @@ namespace BlueApp.Functions
             {
                 if (device.DeviceName.ToString() == name)
                 {
-                    var ep = new BluetoothEndPoint(device.DeviceAddress, serviceClass);
-                    
+                    var tuple = Tuple.Create(new BluetoothEndPoint(device.DeviceAddress, serviceClass), context);
+
                     try
                     {
                         if (!device.Connected)
                         {
-                            client.Connect(ep); //Подключаемся к устройству с именем name
-                            MessageBox.Show("Устройство " + name + " подключено!");
+                            Thread ConnectThread = new Thread(new ParameterizedThreadStart(ThreadConnect));
+                            ConnectThread.Name = "Поток подключения к Bluetooth устройству";
+                            ConnectThread.Start(tuple);
                         }
                         else
                         {
                             MessageBox.Show("Устройство " + name + " уже подключено!");
+                            ReadDataFunction(context);
                         }
-                        
-                        ReadData.ReadDataStream((a, e) =>
-                        {
-                            if (e.NewItems.Count > 0)
-                            {
-                                context.Messages += e.NewItems[0].ToString();
-                            }
-                        });
-                        
                     }
                     catch
                     {
@@ -72,6 +66,23 @@ namespace BlueApp.Functions
                     }
                 }
             }
+        }
+
+        private static void ThreadConnect(object tuple)
+        {
+            client.Connect((BluetoothEndPoint)((Tuple<BluetoothEndPoint, Form1>)tuple).Item1); //Подключаемся к устройству с именем name
+            ReadDataFunction(((Tuple<BluetoothEndPoint, Form1>)tuple).Item2);
+        }
+
+        public static void ReadDataFunction(Form1 context)
+        {
+            ReadData.ReadDataStream((a, e) =>
+            {
+                if (e.NewItems.Count > 0)
+                {
+                    context.Messages += e.NewItems[0].ToString();
+                }
+            });
         }
     }
 }

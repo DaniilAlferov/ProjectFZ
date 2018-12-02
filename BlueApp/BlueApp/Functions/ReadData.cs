@@ -16,6 +16,7 @@ namespace BlueApp.Functions
             try
             {
                 Thread ReadThread = new Thread(ThreadRead); //Создаем поток для чтения и записи данных
+                ReadThread.Name = "Поток получения данных";
                 ReadThread.Start();
 
                 collection.CollectionChanged += handler;
@@ -45,10 +46,6 @@ namespace BlueApp.Functions
                         collection.Add(str.ToString().Trim()); //Записываем в список значения
                     }
                     while (true);
-                }
-                else
-                {
-                    MessageBox.Show("Соединение закрыто!");
                 }
             }
             catch(Exception e)

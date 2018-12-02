@@ -31,6 +31,13 @@ namespace BlueApp
             comboBox1.Items.Clear();
 
             //Надо сделать, если бт не вкл, то сособщение или вкл его
+            Thread ScanThread = new Thread(ThreadScan);//Создание отдельного потока для сканирования сети Bluetooth
+            ScanThread.Name = "Поток сканирования сети Bluetooth";
+            ScanThread.Start();
+        }
+
+        private void ThreadScan()
+        {
             devices = BluetoothFunctions.Scan(); //Получение имен всех найденных девайсов
 
             String deviceName;
@@ -40,14 +47,24 @@ namespace BlueApp
                 foreach (BluetoothDeviceInfo device in devices)
                 {
                     deviceName = device.DeviceName.ToString();
-                    comboBox1.Items.Add(deviceName);
+                    comboBox1.Invoke((ThreadStart)delegate ()
+                    {
+                        comboBox1.Items.Add(deviceName);
+                    });
                 }
                 if (comboBox1.Items.Count != 0)
                 {
-                    comboBox1.Enabled = true;
-                    comboBox1.Text = "Выберите устройство:";
+                    comboBox1.Invoke((ThreadStart)delegate ()
+                    {
+                        comboBox1.Enabled = true;
+                        comboBox1.Text = "Выберите устройство:";
+                    });
                 }
             }
+            button1.Invoke((ThreadStart)delegate ()
+            {
+                button1.Enabled = true;
+            });
             button1.Enabled = true;
         }
 
